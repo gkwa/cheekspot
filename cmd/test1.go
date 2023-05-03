@@ -4,8 +4,11 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/k0kubun/pp"
 	"github.com/spf13/cobra"
@@ -46,22 +49,45 @@ func init() {
 }
 
 type InstanceInfo struct {
-	AccountId        string `json:"accountId"`
-	Architecture     string `json:"architecture"`
-	AvailabilityZone string `json:"availabilityZone"`
+	gorm.Model
+	AccountId               string      `json:"accountId"`
+	Architecture            string      `json:"architecture"`
+	AvailabilityZone        string      `json:"availabilityZone"`
+	Epochtime               int64       `json:"epochtime"`
+	ImageId                 string      `json:"imageId"`
+	InstanceId              string      `json:"instanceId"`
+	InstanceType            string      `json:"instanceType"`
+	KernelId                string      `json:"kernelId"`
+	PendingTime             string      `json:"pendingTime"`
+	PrivateIp               string      `json:"privateIp"`
+	RamdiskId               string      `json:"ramdiskId"`
+	Region                  string      `json:"region"`
+	Version                 string      `json:"version"`
+	BillingProducts         MultiString `gorm:"type:text"`
+	DevpayProductCodes      MultiString `gorm:"type:text"`
+	MarketplaceProductCodes MultiString `gorm:"type:text"`
+
 	// BillingProducts         []string `json:"billingProducts"`
 	// DevpayProductCodes      []string `json:"devpayProductCodes"`
-	Epochtime    int64  `json:"epochtime"`
-	ImageId      string `json:"imageId"`
-	InstanceId   string `json:"instanceId"`
-	InstanceType string `json:"instanceType"`
-	KernelId     string `json:"kernelId"`
 	// MarketplaceProductCodes []string `json:"marketplaceProductCodes"`
-	PendingTime string `json:"pendingTime"`
-	PrivateIp   string `json:"privateIp"`
-	RamdiskId   string `json:"ramdiskId"`
-	Region      string `json:"region"`
-	Version     string `json:"version"`
+}
+
+type MultiString []string
+
+func (s *MultiString) Scan(src interface{}) error {
+	str, ok := src.(string)
+	if !ok {
+		return errors.New("failed to scan multistring field - source is not a string")
+	}
+	*s = strings.Split(str, ",")
+	return nil
+}
+
+func (s MultiString) Value() (driver.Value, error) {
+	if len(s) == 0 {
+		return nil, nil
+	}
+	return strings.Join(s, ","), nil
 }
 
 func parseInstanceInfo(jsonStr string) (InstanceInfo, error) {
@@ -104,7 +130,7 @@ func createStructFromStr() (InstanceInfo, error) {
 		panic(err)
 	}
 	meta.Epochtime = 1654321987
-	pp.Println(meta)
+	// pp.Println(meta)
 	return meta, err
 }
 
@@ -123,19 +149,13 @@ func test1() error {
 	// logger.Logger.Info("Hello, world!")
 	db.AutoMigrate(&InstanceInfo{})
 
-	// Migrate specific table
-	db.Table("instances").AutoMigrate(&InstanceInfo{})
-
 	// Create a new meta record
 	db.Create(&meta)
 
-	// Query for users born within the last month
 	var instances []InstanceInfo
-	db.Where("Epochtime >= ?", meta.Epochtime).Find(&instances)
+	db.Where("Epochtime = ?", meta.Epochtime).Find(&instances)
 
-	// Print the results
-	for _, instance := range instances {
-		pp.Println(instance)
-	}
+    pp.Println(instances)
+
 	return nil
 }
