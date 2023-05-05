@@ -22,11 +22,7 @@ type ExtendedInstanceIdentityDocument struct {
 	RamdiskId               string
 	Region                  string
 	Version                 string
-	BillingProducts         MultiString `gorm:"type:text"`
-	DevpayProductCodes      MultiString `gorm:"type:text"`
-	MarketplaceProductCodes MultiString `gorm:"type:text"`
-
-	// DevpayProductCodes      []string
-	// MarketplaceProductCodes []string
-	// BillingProducts         []string
+	BillingProducts         MultiString `gorm:"type:text"` // []string
+	DevpayProductCodes      MultiString `gorm:"type:text"` // []string
+	MarketplaceProductCodes MultiString `gorm:"type:text"` // []string
 }
