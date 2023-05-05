@@ -4,11 +4,8 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"database/sql/driver"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/k0kubun/pp"
 	"github.com/spf13/cobra"
@@ -49,24 +46,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// test1Cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-type MultiString []string
-
-func (s *MultiString) Scan(src interface{}) error {
-	str, ok := src.(string)
-	if !ok {
-		return errors.New("failed to scan multistring field - source is not a string")
-	}
-	*s = strings.Split(str, ",")
-	return nil
-}
-
-func (s MultiString) Value() (driver.Value, error) {
-	if len(s) == 0 {
-		return nil, nil
-	}
-	return strings.Join(s, ","), nil
 }
 
 func test() error {

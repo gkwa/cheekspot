@@ -1,6 +1,10 @@
 package cmd
 
 import (
+	"database/sql/driver"
+	"errors"
+	"strings"
+
 	"gorm.io/gorm"
 )
 
@@ -25,4 +29,20 @@ type ExtendedInstanceIdentityDocument struct {
 	BillingProducts         MultiString `gorm:"type:text"` // []string
 	DevpayProductCodes      MultiString `gorm:"type:text"` // []string
 	MarketplaceProductCodes MultiString `gorm:"type:text"` // []string
+}
+
+func (s *MultiString) Scan(src interface{}) error {
+	str, ok := src.(string)
+	if !ok {
+		return errors.New("failed to scan multistring field - source is not a string")
+	}
+	*s = strings.Split(str, ",")
+	return nil
+}
+
+func (s MultiString) Value() (driver.Value, error) {
+	if len(s) == 0 {
+		return nil, nil
+	}
+	return strings.Join(s, ","), nil
 }
