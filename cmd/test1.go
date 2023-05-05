@@ -51,27 +51,27 @@ func init() {
 
 type ExtendedIdentityDoc struct {
 	gorm.Model
-	AccountId        string `json:"AccountId"`
-	Architecture     string `json:"Architecture"`
-	AvailabilityZone string `json:"AvailabilityZone"`
-	Epochtime        int64  `json:"Epochtime"`
-	ImageId          string `json:"ImageId"`
-	InstanceId       string `json:"InstanceId"`
-	InstanceType     string `json:"InstanceType"`
-	KernelId         string `json:"KernelId"`
-	PendingTime      string `json:"PendingTime"`
-	PrivateIp        string `json:"PrivateIp"`
-	RamdiskId        string `json:"RamdiskId"`
-	Region           string `json:"Region"`
-	Version          string `json:"Version"`
-
+	AccountId               string
+	Architecture            string
+	AvailabilityZone        string
+	Epochtime               int64
+	ImageId                 string
+	InstanceId              string
+	InstanceType            string
+	KernelId                string
+	PendingTime             string
+	PrivateIp               string
+	RamdiskId               string
+	Region                  string
+	Version                 string
 	BillingProducts         MultiString `gorm:"type:text"`
 	DevpayProductCodes      MultiString `gorm:"type:text"`
 	MarketplaceProductCodes MultiString `gorm:"type:text"`
 
-	// DevpayProductCodes      []string `json:"devpayProductCodes"`
-	// MarketplaceProductCodes []string `json:"marketplaceProductCodes"`
-	// BillingProducts         []string `json:"billingProducts"`
+	// DevpayProductCodes      []string
+	// MarketplaceProductCodes []string
+	// BillingProducts         []string
+
 }
 
 type MultiString []string
