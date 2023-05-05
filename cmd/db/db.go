@@ -9,6 +9,7 @@ import (
 
 	"github.com/natefinch/lumberjack"
 	"github.com/spf13/cobra"
+	"github.com/taylormonacelli/cheekspot/cmd"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gorm.io/gorm"
@@ -36,7 +37,7 @@ to quickly create a Cobra application.`,
 var Logger *zap.Logger
 
 func init() {
-	rootCmd.AddCommand(dbCmd)
+	cmd.RootCmd.AddCommand(dbCmd)
 
 	logFile := &lumberjack.Logger{
 		Filename:   "logs/app.log",

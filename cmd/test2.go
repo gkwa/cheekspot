@@ -7,10 +7,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/k0kubun/pp"
 
 	"github.com/spf13/cobra"
-	mysns "github.com/taylormonacelli/cheekspot/cmd/aws/sns"
 )
 
 // test2Cmd represents the test2 command
@@ -30,7 +30,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(test2Cmd)
+	RootCmd.AddCommand(test2Cmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -52,15 +52,13 @@ func test2() {
 		panic(err)
 	}
 	pp.Printf("my message %s", msg)
-
 }
 
-func jsonStrToSNSMessage(jsonStr string) (mysns.Message, error) {
-	var msg mysns.Message
+func jsonStrToSNSMessage(jsonStr string) (types.Message, error) {
+	var msg types.Message
 	err := json.Unmarshal([]byte(jsonStr), &msg)
 	if err != nil {
-		return mysns.Message{}, err
+		return types.Message{}, err
 	}
 	return msg, nil
-
 }

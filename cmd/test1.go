@@ -17,6 +17,8 @@ import (
 
 	// "gorm.io/driver/sqlite" // Sqlite driver based on GGO
 	"github.com/glebarez/sqlite" // Pure go SQLite driver, checkout https://github.com/glebarez/sqlite for details
+
+	mysns "github.com/taylormonacelli/cheekspot/cmd/aws/sns"
 )
 
 // test1Cmd represents the test1 command
@@ -36,7 +38,7 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(test1Cmd)
+	RootCmd.AddCommand(test1Cmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -47,31 +49,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// test1Cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-type ExtendedIdentityDoc struct {
-	gorm.Model
-	AccountId               string
-	Architecture            string
-	AvailabilityZone        string
-	Epochtime               int64
-	ImageId                 string
-	InstanceId              string
-	InstanceType            string
-	KernelId                string
-	PendingTime             string
-	PrivateIp               string
-	RamdiskId               string
-	Region                  string
-	Version                 string
-	BillingProducts         MultiString `gorm:"type:text"`
-	DevpayProductCodes      MultiString `gorm:"type:text"`
-	MarketplaceProductCodes MultiString `gorm:"type:text"`
-
-	// DevpayProductCodes      []string
-	// MarketplaceProductCodes []string
-	// BillingProducts         []string
-
 }
 
 type MultiString []string
@@ -92,16 +69,16 @@ func (s MultiString) Value() (driver.Value, error) {
 	return strings.Join(s, ","), nil
 }
 
-func parseInstanceInfo(jsonStr string) (ExtendedIdentityDoc, error) {
-	var info ExtendedIdentityDoc
+func parseInstanceInfo(jsonStr string) (mysns.ExtendedInstanceIdentityDocument, error) {
+	var info mysns.ExtendedInstanceIdentityDocument
 	err := json.Unmarshal([]byte(jsonStr), &info)
 	if err != nil {
-		return ExtendedIdentityDoc{}, err
+		return mysns.ExtendedInstanceIdentityDocument{}, err
 	}
 	return info, nil
 }
 
-func createStructFromStr() (ExtendedIdentityDoc, error) {
+func createStructFromStr() (mysns.ExtendedInstanceIdentityDocument, error) {
 	jsonStr := `{
         "accountId": "123456789012",
         "architecture": "arm64",
@@ -132,7 +109,6 @@ func createStructFromStr() (ExtendedIdentityDoc, error) {
 		panic(err)
 	}
 	meta.Epochtime = 1654321987
-	// pp.Println(meta)
 	return meta, err
 }
 
@@ -148,14 +124,14 @@ func test1() error {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&ExtendedIdentityDoc{})
+	db.AutoMigrate(&mysns.ExtendedInstanceIdentityDocument{})
 	db.Create(&doc)
 
-	var instances []ExtendedIdentityDoc
+	var instances []mysns.ExtendedInstanceIdentityDocument
 	db.Where("Epochtime = ?", doc.Epochtime).Find(&instances)
 	pp.Println(instances)
 
-	var doc1 ExtendedIdentityDoc
+	var doc1 mysns.ExtendedInstanceIdentityDocument
 	db.First(&doc1, 1)
 
 	pp.Println(doc1)
