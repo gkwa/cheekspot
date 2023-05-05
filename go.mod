@@ -3,9 +3,6 @@ module github.com/taylormonacelli/cheekspot
 go 1.20
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.18.0
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.3
-	github.com/aws/aws-sdk-go-v2/service/sqs v1.21.0
 	github.com/glebarez/sqlite v1.8.0
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/natefinch/lumberjack v2.0.0+incompatible
@@ -16,7 +13,6 @@ require (
 )
 
 require (
-	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/glebarez/go-sqlite v1.21.1 // indirect

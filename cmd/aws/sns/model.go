@@ -6,6 +6,7 @@ import (
 
 type MultiString []string
 
+// "github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
 type ExtendedInstanceIdentityDocument struct {
 	gorm.Model
 	AccountId               string
