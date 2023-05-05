@@ -12,6 +12,7 @@ import (
 
 	"github.com/k0kubun/pp"
 	"github.com/spf13/cobra"
+
 	"gorm.io/gorm"
 
 	// "gorm.io/driver/sqlite" // Sqlite driver based on GGO
@@ -48,28 +49,29 @@ func init() {
 	// test1Cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-type InstanceInfo struct {
+type ExtendedIdentityDoc struct {
 	gorm.Model
-	AccountId               string      `json:"accountId"`
-	Architecture            string      `json:"architecture"`
-	AvailabilityZone        string      `json:"availabilityZone"`
-	Epochtime               int64       `json:"epochtime"`
-	ImageId                 string      `json:"imageId"`
-	InstanceId              string      `json:"instanceId"`
-	InstanceType            string      `json:"instanceType"`
-	KernelId                string      `json:"kernelId"`
-	PendingTime             string      `json:"pendingTime"`
-	PrivateIp               string      `json:"privateIp"`
-	RamdiskId               string      `json:"ramdiskId"`
-	Region                  string      `json:"region"`
-	Version                 string      `json:"version"`
+	AccountId        string `json:"AccountId"`
+	Architecture     string `json:"Architecture"`
+	AvailabilityZone string `json:"AvailabilityZone"`
+	Epochtime        int64  `json:"Epochtime"`
+	ImageId          string `json:"ImageId"`
+	InstanceId       string `json:"InstanceId"`
+	InstanceType     string `json:"InstanceType"`
+	KernelId         string `json:"KernelId"`
+	PendingTime      string `json:"PendingTime"`
+	PrivateIp        string `json:"PrivateIp"`
+	RamdiskId        string `json:"RamdiskId"`
+	Region           string `json:"Region"`
+	Version          string `json:"Version"`
+
 	BillingProducts         MultiString `gorm:"type:text"`
 	DevpayProductCodes      MultiString `gorm:"type:text"`
 	MarketplaceProductCodes MultiString `gorm:"type:text"`
 
-	// BillingProducts         []string `json:"billingProducts"`
 	// DevpayProductCodes      []string `json:"devpayProductCodes"`
 	// MarketplaceProductCodes []string `json:"marketplaceProductCodes"`
+	// BillingProducts         []string `json:"billingProducts"`
 }
 
 type MultiString []string
@@ -90,16 +92,16 @@ func (s MultiString) Value() (driver.Value, error) {
 	return strings.Join(s, ","), nil
 }
 
-func parseInstanceInfo(jsonStr string) (InstanceInfo, error) {
-	var info InstanceInfo
+func parseInstanceInfo(jsonStr string) (ExtendedIdentityDoc, error) {
+	var info ExtendedIdentityDoc
 	err := json.Unmarshal([]byte(jsonStr), &info)
 	if err != nil {
-		return InstanceInfo{}, err
+		return ExtendedIdentityDoc{}, err
 	}
 	return info, nil
 }
 
-func createStructFromStr() (InstanceInfo, error) {
+func createStructFromStr() (ExtendedIdentityDoc, error) {
 	jsonStr := `{
         "accountId": "123456789012",
         "architecture": "arm64",
@@ -135,7 +137,7 @@ func createStructFromStr() (InstanceInfo, error) {
 }
 
 func test1() error {
-	meta, err := createStructFromStr()
+	doc, err := createStructFromStr()
 	if err != nil {
 		fmt.Printf("fail at %s", err)
 		return err
@@ -146,16 +148,21 @@ func test1() error {
 		panic("failed to connect database")
 	}
 
-	// logger.Logger.Info("Hello, world!")
-	db.AutoMigrate(&InstanceInfo{})
+	db.AutoMigrate(&ExtendedIdentityDoc{})
+	db.Create(&doc)
 
-	// Create a new meta record
-	db.Create(&meta)
+	var instances []ExtendedIdentityDoc
+	db.Where("Epochtime = ?", doc.Epochtime).Find(&instances)
+	pp.Println(instances)
 
-	var instances []InstanceInfo
-	db.Where("Epochtime = ?", meta.Epochtime).Find(&instances)
+	var doc1 ExtendedIdentityDoc
+	db.First(&doc1, 1)
 
-    pp.Println(instances)
+	pp.Println(doc1)
+
+	jsBytes, _ := json.MarshalIndent(doc1, "", "    ")
+	jsonStr := string(jsBytes)
+	fmt.Println(jsonStr)
 
 	return nil
 }
