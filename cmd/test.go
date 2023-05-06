@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	mysns "github.com/taylormonacelli/cheekspot/cmd/aws/sns"
+	"github.com/taylormonacelli/cheekspot/cmd/logging"
 
 	"gorm.io/gorm"
 
@@ -74,6 +75,7 @@ func test() error {
         "region": "us-east-1",
         "version": "2022-04-01"
     }`
+	logging.Logger.Debug("Debug message from subcommand")
 
 	var doc mysns.ExtendedInstanceIdentityDocument
 
@@ -104,6 +106,9 @@ func test() error {
 		fmt.Println("Error marshaling JSON:", err)
 	}
 	fmt.Println(string(jsonBytes))
+
+	logging.Logger.Info("Info message from subcommand")
+	logging.Logger.Debug("Debug message from subcommand")
 
 	return nil
 }

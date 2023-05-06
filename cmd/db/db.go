@@ -7,11 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/natefinch/lumberjack"
 	"github.com/spf13/cobra"
 	"github.com/taylormonacelli/cheekspot/cmd"
+	logging "github.com/taylormonacelli/cheekspot/cmd/logging"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"gorm.io/gorm"
 
 	// "gorm.io/driver/sqlite" // Sqlite driver based on GGO
@@ -39,21 +38,6 @@ var Logger *zap.Logger
 func init() {
 	cmd.RootCmd.AddCommand(dbCmd)
 
-	logFile := &lumberjack.Logger{
-		Filename:   "logs/app.log",
-		MaxSize:    10, // megabytes
-		MaxBackups: 5,
-		MaxAge:     28, // days
-		Compress:   true,
-	}
-
-	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
-		zapcore.AddSync(logFile),
-		zap.InfoLevel,
-	)
-
-	Logger = zap.New(core)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
