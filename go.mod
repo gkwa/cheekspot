@@ -2,7 +2,7 @@ module github.com/taylormonacelli/cheekspot
 
 go 1.21.0
 
-toolchain go1.24.2
+toolchain go1.24.3
 
 require (
 	github.com/glebarez/sqlite v1.11.0
