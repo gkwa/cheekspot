@@ -7,7 +7,7 @@ toolchain go1.25.6
 require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/k0kubun/pp v3.0.1+incompatible
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	go.uber.org/zap v1.27.1
